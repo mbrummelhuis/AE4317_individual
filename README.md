@@ -12,3 +12,5 @@ Additionally, uncommenting lines 100 through 106 lets you view all the inbetween
 WARNING: Turning on video causes the entire program to take extremely long to run (personally, I usually killed the process to get out of viewing the video after a while).
 
 Usual time to run for me was in the 1500 second range with no video. 
+
+If you're using a UNIX based OS, you need to alter the code a bit and replace the backward slashes in line 22 by forward slashes. Code was built on a Windows machine.
