@@ -12,6 +12,9 @@ def readImgAndMaskPaths():
     """
     Reads, orders and returns lists of absolute paths (strings) to the images and masks. 
     Also returns an absolute path to a reference image (which can be used for feature matching).
+    Outputs
+    sorted_img_paths    list    List of paths to the image, sorted on image number
+    sorted_mask_paths   list    List of paths to the masks, sorted on mask number
     """
     imgs = []
     masks = []
@@ -57,6 +60,15 @@ def readImgAndMaskPaths():
 def harrisCornerConvolution(img_path,threshold_Harris,threshold_box,erosion_dilation):
     """
     Uses Harris Corner Detection followed by convolutional filters to create a binary image of the location of the gates
+    Inputs
+    img_paths           str     Path to the image
+    threshold_Harris    float   Threshold value for which pixel is marked as corner
+    threshold_box       float   Fraction (0-1) of pixels required white in box filter
+    erosion_dilation    list    List of 2 values, size of erosion kernel and size of dilation kernel
+
+    Outputs
+    prediction_bin      array   Image with predicted mask
+    frame_runtime       float   Time in seconds frame took to be processed
     """
     start_time=time.time() # Record start time to calculate computational time for frame
 
@@ -82,12 +94,12 @@ def harrisCornerConvolution(img_path,threshold_Harris,threshold_box,erosion_dila
     prediction_bin = cv2.dilate(eroded,np.ones((erosion_dilation[1],erosion_dilation[1])),iterations = 1)
 
     # Uncomment below if you want to see a lot of images
-    #cv2.imshow('predicted mask', prediction_bin)
-    #cv2.imshow('Corner detection',dst)
-    #cv2.imshow('Eroded', eroded)
-    #cv2.imshow('Filtered corner detection',fdst)
-    #if (cv2.waitKey(20) & 0xff) == ord('q'):
-    #    pass
+    cv2.imshow('predicted mask', prediction_bin)
+    cv2.imshow('Corner detection',dst)
+    cv2.imshow('Eroded', eroded)
+    cv2.imshow('Filtered corner detection',fdst)
+    if (cv2.waitKey(20) & 0xff) == ord('q'):
+        pass
 
     frame_runtime = time.time() - start_time
     return prediction_bin, frame_runtime
@@ -99,6 +111,15 @@ def createConfusionMatrix(prediction, label_path):
     False Positives (FP): Number of pixels that was positive incorrectly.
     False Negatives (FN): Number of pixels that was negative incorrectly.
     True Negatives (TN): Number of pixels that was negative correctly.
+    Inputs
+    prediction      array   Predicted binary image
+    label_path      str     Path to the binary image label
+    Outputs
+    iou             float   Intersection over union
+    TP              int     True positive pixels
+    FP              int     False positive pixels
+    FN              int     False negative pixels
+    TN              int     True negative pixels
     """
     #Load label
     label = cv2.imread(label_path,cv2.IMREAD_GRAYSCALE)
@@ -127,6 +148,8 @@ def createConfusionMatrix(prediction, label_path):
 def drawROC(confusion_matrix):
     """
     Calculate ratios and draw ROC curves for given confusion matrix.
+    Inputs
+    confusion_matrix    array   matrix containing all iou, TP, TN, FP, FN values
     """
     # Color list to pick colours from for different ROC curves
     color_list = ['b', 'g', 'r', 'y', 'c', 'k', 'm', 'w']
@@ -163,10 +186,16 @@ def printBestmIoU(confusion_matrix):
     """
     Takes in confusion matrix and prints out the best mean Intersection over Union along with the indexes
     of the parameters and threshold that it belongs to.
+    Inputs
+    confusion_matrix    array   matrix containing all iou, TP, TN, FP, FN values
+    Outputs
+    best_miou   float   Best mIoU score found in all runs
+    best_m      int     Index of the best configuration 
+    best_n      int     Index of the best threshold value
     """
     best_miou = 0.
-    best_m = 0.
-    best_n = 0.
+    best_m = 0
+    best_n = 0
     miou_list = []
 
     # Iterate over the parameter sets and threshold values
@@ -176,17 +205,17 @@ def printBestmIoU(confusion_matrix):
             miou_list.append(mean_iou)
             if mean_iou > best_miou: # Save if better than previous best mIoU
                 best_miou = mean_iou
-                best_n = n
                 best_m = m
+                best_n = n
             else:
                 pass
     
     # Display results
     print(miou_list)
     print("Best mIoU is: ", best_miou)
-    print("Params index: ", m)
-    print("Threshold index:", n)
-    return best_miou, m, n
+    print("Best params index: ", best_m)
+    print("Best threshold index:", best_n)
+    return best_miou, best_m, best_n
 
 
 def main(video = False):
@@ -206,6 +235,8 @@ def main(video = False):
     for m in range(len(params)):
         for n in range(len(threshold_list)):
             total_frame_time = 0.
+            print('Parameter set: ', params[m])
+            print('Threshold value: ', threshold_list[n])
             for i in range(len(img_paths)):
                 
                 # Run algorithm on frame
@@ -232,10 +263,10 @@ def main(video = False):
                 fps = (i+1)/total_frame_time
             # Save FPS of all frames of one run and print average
             fps_list.append(fps)
-            print(fps)
+            print("Average FPS this run: ",fps)
     
     # Print average FPS over all runs and determine and show other results
-    print("Average FPS: ", sum(fps_list)/len(fps_list))
+    print("Total average FPS: ", sum(fps_list)/len(fps_list))
     printBestmIoU(confusion_matrix)
     drawROC(confusion_matrix)
     return
@@ -243,7 +274,7 @@ def main(video = False):
     
 if __name__ == '__main__':
     start_time = time.time()
-    video = False # Set to true to have video
+    video = True # Set to true to have video
     main(video)
     print("Done! Total runtime was %s seconds." % (time.time() - start_time))
     
