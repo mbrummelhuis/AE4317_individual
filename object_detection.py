@@ -21,6 +21,10 @@ def readImgAndMaskPaths():
     dir = str(pathlib.Path(__file__).parent.absolute())
     img_dir = dir + "\WashingtonOBRace\*.png"
     image_paths = glob.glob(img_dir)
+    
+    if len(image_paths)< 1:
+        raise Exception("Images not found")
+
     for path in image_paths:
         if 'img_' in path:
             imgs.append(path)
