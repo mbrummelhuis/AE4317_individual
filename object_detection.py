@@ -94,12 +94,12 @@ def harrisCornerConvolution(img_path,threshold_Harris,threshold_box,erosion_dila
     prediction_bin = cv2.dilate(eroded,np.ones((erosion_dilation[1],erosion_dilation[1])),iterations = 1)
 
     # Uncomment below if you want to see a lot of images
-    cv2.imshow('predicted mask', prediction_bin)
-    cv2.imshow('Corner detection',dst)
-    cv2.imshow('Eroded', eroded)
-    cv2.imshow('Filtered corner detection',fdst)
-    if (cv2.waitKey(20) & 0xff) == ord('q'):
-        pass
+    #cv2.imshow('predicted mask', prediction_bin)
+    #cv2.imshow('Corner detection',dst)
+    #cv2.imshow('Eroded', eroded)
+    #cv2.imshow('Filtered corner detection',fdst)
+    #if (cv2.waitKey(20) & 0xff) == ord('q'):
+    #    pass
 
     frame_runtime = time.time() - start_time
     return prediction_bin, frame_runtime
@@ -230,6 +230,7 @@ def main(video = False):
     # Create empty confusion matrix to store results
     confusion_matrix = np.empty((len(params),len(threshold_list),5,len(img_paths)))
     fps_list = []
+    fps = 0
 
     # Iterate over the parameter sets and threshold values in the threshold list
     for m in range(len(params)):
@@ -274,7 +275,7 @@ def main(video = False):
     
 if __name__ == '__main__':
     start_time = time.time()
-    video = True # Set to true to have video
+    video = False # Set to true to have video
     main(video)
     print("Done! Total runtime was %s seconds." % (time.time() - start_time))
     
