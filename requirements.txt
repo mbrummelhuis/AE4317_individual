@@ -1,0 +1,9 @@
+Latest versions (may 2021)
+
+pathlib
+glob
+cv2
+math
+matplotlib.pyplot
+numpy
+time
