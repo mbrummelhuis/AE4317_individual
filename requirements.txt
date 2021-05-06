@@ -1,9 +1,9 @@
 Latest versions (may 2021)
 
-pathlib
-glob
-cv2
-math
-matplotlib.pyplot
-numpy
-time
+pathlib			pip install pathlib
+glob			pip install glob2
+cv2			pip install opencv-python
+math			pip install python-math
+matplotlib.pyplot	pip install matplotlib
+numpy			pip install numpy
+time			pip install python-time
