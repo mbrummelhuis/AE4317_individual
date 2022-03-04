@@ -14,3 +14,5 @@ WARNING: Turning on video causes the entire program to take extremely long to ru
 Usual time to run for me was in the 1500 second range with no video. 
 
 If you're using a UNIX based OS, you need to alter the code a bit and replace the backward slashes in line 22 by forward slashes. Code was built on a Windows machine.
+
+Unfortunately, due to confidentiality issues, the accompanying video data cannot be shared.
